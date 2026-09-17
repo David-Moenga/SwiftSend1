@@ -1,102 +1,18 @@
 import { useState } from 'react';
+import { Check, Copy, Search, ShieldCheck } from 'lucide-react';
+
+const transfer = { recipient: 'Amina Mwangi', country: 'Kenya', sent: 'USD 100.00', received: 'KES 12,294.30', reference: 'SS-240917-184', status: 'On its way', updated: '2 minutes ago' };
 
 const Track = () => {
-  const [refId, setRefId] = useState('');
-  const [result, setResult] = useState(null);
-
-  const mockTrack = () => {
-    // Mock data (you can replace this with real API call)
-    if (refId === 'TXN001') {
-      setResult({
-        status: 'Success',
-        recipient: 'John Doe',
-        country: 'Kenya',
-        amountSent: '100 USD',
-        received: '10900 KES',
-        date: '2025-05-06',
-        progress: ['Initiated', 'Processed', 'Completed'],
-      });
-    } else {
-      setResult({ error: 'Transaction not found. Please check your reference ID.' });
-    }
-  };
-
-  const statusColors = {
-    Success: 'bg-green-100 text-green-700',
-    Pending: 'bg-yellow-100 text-yellow-700',
-    Failed: 'bg-red-100 text-red-700',
-  };
-
-  return (
-    <div className="min-h-screen bg-[#F8F9FA] p-6">
-      <h2 className="text-3xl font-bold text-[#2C3E50] mb-6">Track Transfer</h2>
-
-      <div className="max-w-xl bg-white p-6 rounded-xl shadow-md mx-auto">
-        <label className="block text-sm text-gray-600 mb-2">Enter Transaction Reference ID</label>
-        <input
-          value={refId}
-          onChange={(e) => setRefId(e.target.value)}
-          className="w-full px-4 py-2 border rounded-lg mb-4"
-          placeholder="e.g. TXN001"
-        />
-        <button
-          onClick={mockTrack}
-          className="bg-[#2C3E50] text-white px-6 py-2 rounded-lg hover:bg-[#1f2c3e]"
-        >
-          Track
-        </button>
-
-        {result && (
-          <div className="mt-6">
-            {result.error ? (
-              <p className="text-red-600">{result.error}</p>
-            ) : (
-              <div className="space-y-4">
-                <div className="flex justify-between">
-                  <span className="text-gray-500">Status</span>
-                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${statusColors[result.status]}`}>
-                    {result.status}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-500">Recipient</span>
-                  <span>{result.recipient}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-500">Country</span>
-                  <span>{result.country}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-500">Amount Sent</span>
-                  <span>{result.amountSent}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-500">Amount Received</span>
-                  <span>{result.received}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-500">Date</span>
-                  <span>{result.date}</span>
-                </div>
-
-                <div className="mt-6">
-                  <h4 className="font-semibold text-gray-700 mb-2">Progress</h4>
-                  <ol className="relative border-l border-gray-200">
-                    {result.progress.map((step, index) => (
-                      <li key={index} className="mb-4 ml-4">
-                        <div className="absolute w-3 h-3 bg-[#2C3E50] rounded-full -left-1.5 top-1" />
-                        <p className="text-gray-700">{step}</p>
-                      </li>
-                    ))}
-                  </ol>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-    </div>
-  );
+  const [reference, setReference] = useState(''); const [result, setResult] = useState(null); const [copied, setCopied] = useState(false);
+  const find = (event) => { event.preventDefault(); setResult(reference.trim() ? transfer : { error: 'Enter your transfer reference to track it.' }); };
+  const copy = () => { navigator.clipboard?.writeText(transfer.reference); setCopied(true); setTimeout(() => setCopied(false), 1500); };
+  return <div className="min-h-[calc(100vh-76px)] bg-[#f7f9fc] py-14 lg:py-20"><div className="mx-auto max-w-3xl px-5"><div className="text-center"><p className="text-sm font-bold uppercase tracking-[.17em] text-[#0f8c76]">Track a transfer</p><h1 className="mt-3 text-4xl font-bold tracking-[-.055em] text-slate-950 sm:text-5xl">Know where your money is.</h1><p className="mx-auto mt-4 max-w-xl text-lg leading-8 text-slate-600">Enter your transfer reference to see a live status update.</p></div><form onSubmit={find} className="mt-9 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm sm:flex sm:gap-3"><div className="flex flex-1 items-center gap-2 px-2"><Search size={19} className="text-slate-400" /><input value={reference} onChange={(e) => setReference(e.target.value)} placeholder="e.g. SS-240917-184" className="w-full py-2.5 text-sm outline-none placeholder:text-slate-400" /></div><button className="mt-2 flex w-full items-center justify-center rounded-xl bg-[#0f766e] px-5 py-3 text-sm font-semibold text-white hover:bg-[#0b645e] sm:mt-0 sm:w-auto">Track transfer</button></form>{!result && <p className="mt-3 text-center text-xs text-slate-400">Try any reference to preview a transfer status.</p>}
+  {result && <section className="mt-8 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">{result.error ? <p className="p-6 text-center text-sm text-rose-600">{result.error}</p> : <><div className="flex flex-col gap-4 border-b border-slate-100 bg-[#f3fcf9] p-6 sm:flex-row sm:items-center sm:justify-between"><div><p className="text-sm font-semibold text-[#087869]">Transfer status</p><h2 className="mt-1 text-2xl font-bold tracking-[-.04em] text-slate-900">{result.status}</h2><p className="mt-1 text-sm text-slate-500">Last updated {result.updated}</p></div><span className="grid h-12 w-12 place-items-center rounded-full bg-[#d7f6e9] text-[#087869]"><Check size={23} strokeWidth={3} /></span></div><div className="p-6"><ol className="relative ml-2 border-l border-slate-200 pb-1"><Timeline complete title="Transfer created" detail="We received your payment" time="10:42 AM" /><Timeline complete title="Money is on its way" detail="Your transfer has been processed" time="10:43 AM" /><Timeline title="Delivered to Amina" detail="We’ll notify you the moment it arrives" time="Expected in minutes" /></ol><div className="mt-7 grid gap-3 rounded-2xl bg-slate-50 p-4 text-sm sm:grid-cols-2"><Detail label="Recipient" value={`${result.recipient} · ${result.country}`} /><Detail label="They receive" value={result.received} /><Detail label="You sent" value={result.sent} /><div className="flex items-center justify-between gap-2"><div><p className="text-xs text-slate-500">Reference</p><p className="mt-1 font-mono text-xs font-semibold text-slate-800">{result.reference}</p></div><button onClick={copy} className="rounded-lg p-2 text-[#087869] hover:bg-white" aria-label="Copy reference">{copied ? <Check size={16} /> : <Copy size={16} />}</button></div></div></div></>}</section>}
+  <p className="mt-8 flex items-center justify-center gap-1.5 text-xs text-slate-400"><ShieldCheck size={15} /> Your transfer details are private and secure.</p></div></div>;
 };
+
+const Timeline = ({ complete, title, detail, time }) => <li className="relative ml-6 pb-7 last:pb-0"><span className={`absolute -left-[31px] top-0 grid h-4 w-4 place-items-center rounded-full border-2 ${complete ? 'border-[#0f9c7f] bg-[#0f9c7f] text-white' : 'border-slate-300 bg-white'}`}>{complete && <Check size={10} strokeWidth={4} />}</span><div className="flex flex-col justify-between gap-1 sm:flex-row"><div><p className="text-sm font-bold text-slate-800">{title}</p><p className="mt-0.5 text-xs text-slate-500">{detail}</p></div><span className="text-xs text-slate-400">{time}</span></div></li>;
+const Detail = ({ label, value }) => <div><p className="text-xs text-slate-500">{label}</p><p className="mt-1 text-sm font-semibold text-slate-800">{value}</p></div>;
 
 export default Track;

@@ -1,141 +1,33 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
+import { Check, ChevronDown, CreditCard, Landmark, LockKeyhole, Smartphone, WalletCards } from 'lucide-react';
+
+const countries = { Kenya: { flag: '🇰🇪', currency: 'KES', rate: 129.42, methods: ['M-Pesa', 'Bank account'] }, Nigeria: { flag: '🇳🇬', currency: 'NGN', rate: 1547.8, methods: ['Mobile money', 'Bank account'] }, Ghana: { flag: '🇬🇭', currency: 'GHS', rate: 15.32, methods: ['Mobile money', 'Bank account'] }, Philippines: { flag: '🇵🇭', currency: 'PHP', rate: 58.21, methods: ['GCash', 'Bank account'] } };
 
 const SendMoney = () => {
-  const [recipient, setRecipient] = useState({
-    name: '',
-    email: '',
-    country: '',
-  });
+  const [recipient, setRecipient] = useState({ name: '', contact: '', country: 'Kenya', delivery: 'M-Pesa' });
+  const [amount, setAmount] = useState('100');
+  const [method, setMethod] = useState('card');
+  const [sent, setSent] = useState(false);
+  const destination = countries[recipient.country]; const number = Number(amount) || 0; const fee = method === 'wallet' ? 2.99 : 4.99;
+  const received = useMemo(() => ((number - fee) * destination.rate).toLocaleString('en-US', { maximumFractionDigits: 2 }), [number, fee, destination.rate]);
+  const submit = (event) => { event.preventDefault(); setSent(true); };
+  const countryChange = (country) => setRecipient({ ...recipient, country, delivery: countries[country].methods[0] });
 
-  const [amount, setAmount] = useState({
-    send: '',
-    currency: 'USD',
-  });
+  if (sent) return <div className="min-h-[calc(100vh-76px)] bg-[#f7f9fc] px-5 py-14"><div className="mx-auto max-w-md rounded-3xl border border-slate-200 bg-white p-8 text-center shadow-sm"><span className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-[#dcf8eb] text-[#087869]"><Check size={27} strokeWidth={3} /></span><p className="mt-6 text-sm font-bold uppercase tracking-[.14em] text-[#087869]">Transfer created</p><h1 className="mt-2 text-3xl font-bold tracking-[-.05em] text-slate-950">You&apos;re all set.</h1><p className="mt-4 leading-7 text-slate-600">We&apos;ll let you know when your transfer to {recipient.name || 'your recipient'} is on its way.</p><div className="mt-7 rounded-2xl bg-slate-50 p-4 text-left"><div className="flex justify-between text-sm"><span className="text-slate-500">Reference</span><span className="font-mono font-semibold text-slate-800">SS-240917-184</span></div><div className="mt-3 flex justify-between text-sm"><span className="text-slate-500">They receive</span><span className="font-bold text-slate-900">{destination.currency} {received}</span></div></div><button onClick={() => setSent(false)} className="mt-7 w-full rounded-xl bg-[#0f766e] py-3 text-sm font-semibold text-white">Make another transfer</button></div></div>;
 
-  const [method, setMethod] = useState('wallet');
-
-  const fee = 1.5; // static for now
-  const exchangeRate = 110.3; // sample rate USD → local
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    alert('Transfer initiated!');
-  };
-
-  return (
-    <div className="min-h-screen bg-[#F8F9FA] py-12 px-4 flex justify-center">
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white p-8 rounded-2xl shadow max-w-2xl w-full space-y-6 border"
-      >
-        <h2 className="text-3xl font-bold text-[#2C3E50] text-center mb-4">Send Money</h2>
-
-        {/* Recipient Details */}
-        <div>
-          <label className="block mb-1 text-sm font-semibold text-[#2C3E50]">Recipient Name</label>
-          <input
-            type="text"
-            value={recipient.name}
-            onChange={(e) => setRecipient({ ...recipient, name: e.target.value })}
-            className="w-full px-4 py-2 rounded border outline-none"
-            required
-          />
-        </div>
-
-        <div className="grid md:grid-cols-2 gap-4">
-          <div>
-            <label className="block mb-1 text-sm font-semibold text-[#2C3E50]">Email / Phone</label>
-            <input
-              type="text"
-              value={recipient.email}
-              onChange={(e) => setRecipient({ ...recipient, email: e.target.value })}
-              className="w-full px-4 py-2 rounded border outline-none"
-              required
-            />
-          </div>
-          <div>
-            <label className="block mb-1 text-sm font-semibold text-[#2C3E50]">Country</label>
-            <select
-              value={recipient.country}
-              onChange={(e) => setRecipient({ ...recipient, country: e.target.value })}
-              className="w-full px-4 py-2 rounded border"
-              required
-            >
-              <option value="">Select country</option>
-              <option value="Kenya">Kenya</option>
-              <option value="Ghana">Ghana</option>
-              <option value="Nigeria">Nigeria</option>
-              <option value="Mexico">Mexico</option>
-            </select>
-          </div>
-        </div>
-
-        {/* Amount Section */}
-        <div className="grid md:grid-cols-2 gap-4 items-end">
-          <div>
-            <label className="block mb-1 text-sm font-semibold text-[#2C3E50]">Amount to Send</label>
-            <input
-              type="number"
-              value={amount.send}
-              onChange={(e) => setAmount({ ...amount, send: e.target.value })}
-              className="w-full px-4 py-2 rounded border outline-none"
-              required
-            />
-          </div>
-          <div>
-            <label className="block mb-1 text-sm font-semibold text-[#2C3E50]">Currency</label>
-            <select
-              value={amount.currency}
-              onChange={(e) => setAmount({ ...amount, currency: e.target.value })}
-              className="w-full px-4 py-2 rounded border"
-              required
-            >
-              <option value="USD">USD</option>
-              <option value="KES">KES</option>
-              <option value="NGN">NGN</option>
-              <option value="MXN">MXN</option>
-            </select>
-          </div>
-        </div>
-
-        {/* Payment Method */}
-        <div>
-          <label className="block mb-1 text-sm font-semibold text-[#2C3E50]">Payment Method</label>
-          <select
-            value={method}
-            onChange={(e) => setMethod(e.target.value)}
-            className="w-full px-4 py-2 rounded border"
-          >
-            <option value="wallet">Wallet</option>
-            <option value="card">Debit/Credit Card</option>
-            <option value="bank">Bank Transfer</option>
-          </select>
-        </div>
-
-        {/* Summary Card */}
-        <div className="bg-[#F1F3F5] p-4 rounded-lg border">
-          <h4 className="text-lg font-semibold mb-2 text-[#2C3E50]">Transfer Summary</h4>
-          <ul className="text-sm text-gray-700 space-y-1">
-            <li>Recipient: {recipient.name || '—'}</li>
-            <li>Amount: {amount.send || 0} {amount.currency}</li>
-            <li>Fee: ${fee}</li>
-            <li>
-              Estimated Receive: {(amount.send - fee) * exchangeRate || 0}{' '}
-              {recipient.country === 'Kenya' ? 'KES' : 'local'}
-            </li>
-          </ul>
-        </div>
-
-        {/* Submit */}
-        <button
-          type="submit"
-          className="bg-[#1ABC9C] text-white px-6 py-3 rounded-full w-full font-semibold hover:bg-[#16a085] transition"
-        >
-          Send Now
-        </button>
-      </form>
-    </div>
-  );
+  return <div className="bg-[#f7f9fc] py-10 lg:py-14"><div className="mx-auto max-w-6xl px-5 lg:px-8"><div className="mb-8"><p className="text-sm font-bold uppercase tracking-[.16em] text-[#0f8c76]">New transfer</p><h1 className="mt-2 text-3xl font-bold tracking-[-.05em] text-slate-950 sm:text-4xl">Send money with confidence.</h1></div><div className="grid gap-7 lg:grid-cols-[1fr_360px]">
+    <form onSubmit={submit} className="space-y-5"><FormCard number="1" title="Where are you sending to?" subtitle="We’ll show you the best available delivery options."><div className="grid gap-4 sm:grid-cols-2"><Input label="Recipient’s full name" value={recipient.name} onChange={(value) => setRecipient({ ...recipient, name: value })} placeholder="e.g. Amina Mwangi" required /><div><label className="mb-1.5 block text-sm font-semibold text-slate-700">Country</label><div className="relative"><select value={recipient.country} onChange={(e) => countryChange(e.target.value)} className="w-full appearance-none rounded-xl border border-slate-200 bg-white px-3 py-3 pr-10 text-sm font-medium outline-none focus:border-[#37b799] focus:ring-4 focus:ring-[#def8ef]">{Object.entries(countries).map(([country, value]) => <option key={country} value={country}>{value.flag} {country}</option>)}</select><ChevronDown className="pointer-events-none absolute right-3 top-3.5 text-slate-400" size={17} /></div></div><Input label="Phone number or email" value={recipient.contact} onChange={(value) => setRecipient({ ...recipient, contact: value })} placeholder="How we can reach them" required /><div><label className="mb-1.5 block text-sm font-semibold text-slate-700">Delivery method</label><select value={recipient.delivery} onChange={(e) => setRecipient({ ...recipient, delivery: e.target.value })} className="w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-sm font-medium outline-none focus:border-[#37b799] focus:ring-4 focus:ring-[#def8ef]">{destination.methods.map((item) => <option key={item}>{item}</option>)}</select></div></div></FormCard>
+      <FormCard number="2" title="How much are you sending?" subtitle={`Your recipient gets ${destination.currency} with no hidden costs.`}><div className="grid gap-4 sm:grid-cols-2"><div><label className="mb-1.5 block text-sm font-semibold text-slate-700">You send</label><div className="flex rounded-xl border border-slate-200 bg-white focus-within:border-[#37b799] focus-within:ring-4 focus-within:ring-[#def8ef]"><span className="flex items-center pl-3 text-sm font-bold text-slate-500">USD</span><input value={amount} onChange={(e) => setAmount(e.target.value.replace(/[^0-9.]/g, ''))} type="text" inputMode="decimal" className="min-w-0 flex-1 rounded-xl px-3 py-3 text-lg font-bold outline-none" /></div></div><div><label className="mb-1.5 block text-sm font-semibold text-slate-700">They receive</label><div className="flex rounded-xl border border-[#a8e5d4] bg-[#f3fcf9]"><span className="flex items-center pl-3 text-sm font-bold text-[#087869]">{destination.currency}</span><span className="flex-1 px-3 py-3 text-lg font-bold text-slate-900">{received}</span></div></div></div></FormCard>
+      <FormCard number="3" title="How would you like to pay?" subtitle="Choose the option that works best for you."><div className="grid gap-3 sm:grid-cols-3"><PaymentOption icon={<CreditCard size={18} />} title="Debit card" detail="Instant" selected={method === 'card'} onClick={() => setMethod('card')} /><PaymentOption icon={<Landmark size={18} />} title="Bank transfer" detail="1–2 days" selected={method === 'bank'} onClick={() => setMethod('bank')} /><PaymentOption icon={<WalletCards size={18} />} title="Wallet" detail="Instant" selected={method === 'wallet'} onClick={() => setMethod('wallet')} /></div></FormCard>
+      <button type="submit" className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#0f766e] py-4 text-sm font-semibold text-white shadow-lg shadow-teal-900/15 transition hover:bg-[#0b645e]">Review transfer <Check size={17} /></button><p className="flex items-center justify-center gap-1.5 text-xs text-slate-500"><LockKeyhole size={14} /> Your payment details are encrypted and secure.</p>
+    </form>
+    <aside className="h-fit rounded-3xl border border-slate-200 bg-white p-6 shadow-sm lg:sticky lg:top-24"><div className="flex items-center justify-between"><h2 className="font-bold tracking-[-.02em] text-slate-900">Transfer summary</h2><span className="text-2xl">{destination.flag}</span></div><div className="mt-6 border-b border-slate-100 pb-5"><p className="text-sm text-slate-500">They receive</p><p className="mt-1 text-3xl font-bold tracking-[-.05em] text-slate-950">{destination.currency} {received}</p><p className="mt-2 flex items-center gap-1.5 text-xs font-semibold text-[#087869]"><Smartphone size={14} /> Delivered to {recipient.delivery}</p></div><dl className="mt-5 space-y-3 text-sm"><Row label="You send" value={`USD ${number.toFixed(2)}`} /><Row label="Transfer fee" value={`USD ${fee.toFixed(2)}`} /><Row label="Exchange rate" value={`1 USD = ${destination.rate} ${destination.currency}`} /><Row label="Delivery time" value="In minutes" good /></dl><div className="mt-6 rounded-xl bg-[#eefbf6] p-3 text-xs leading-5 text-[#216d5b]">The rate above is guaranteed for the next 30 minutes. You’ll confirm every detail before payment.</div></aside>
+  </div></div></div>;
 };
+
+const FormCard = ({ number, title, subtitle, children }) => <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-7"><div className="flex gap-3"><span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-[#e5f8f1] text-xs font-bold text-[#087869]">{number}</span><div><h2 className="font-bold tracking-[-.02em] text-slate-900">{title}</h2><p className="mt-0.5 text-sm text-slate-500">{subtitle}</p></div></div><div className="mt-6">{children}</div></section>;
+const Input = ({ label, value, onChange, placeholder, required }) => <div><label className="mb-1.5 block text-sm font-semibold text-slate-700">{label}</label><input value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} required={required} className="w-full rounded-xl border border-slate-200 px-3 py-3 text-sm outline-none placeholder:text-slate-400 focus:border-[#37b799] focus:ring-4 focus:ring-[#def8ef]" /></div>;
+const PaymentOption = ({ icon, title, detail, selected, onClick }) => <button type="button" onClick={onClick} className={`rounded-xl border p-3 text-left transition ${selected ? 'border-[#43b99e] bg-[#f1fbf7] ring-1 ring-[#43b99e]' : 'border-slate-200 hover:border-slate-300'}`}><span className={selected ? 'text-[#087869]' : 'text-slate-500'}>{icon}</span><span className="mt-2 block text-sm font-bold text-slate-800">{title}</span><span className="mt-0.5 block text-xs text-slate-500">{detail}</span></button>;
+const Row = ({ label, value, good }) => <div className="flex items-start justify-between gap-4"><dt className="text-slate-500">{label}</dt><dd className={`text-right text-xs font-semibold ${good ? 'text-[#087869]' : 'text-slate-800'}`}>{value}</dd></div>;
 
 export default SendMoney;

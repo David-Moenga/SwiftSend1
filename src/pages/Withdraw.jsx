@@ -31,7 +31,7 @@ const Withdraw = () => {
       } else {
         setMessage(data.error || 'Something went wrong.');
       }
-    } catch (error) {
+    } catch {
       setMessage('Network error. Please try again.');
     }
   };

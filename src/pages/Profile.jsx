@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 const Profile = () => {
-  const [user, setUser] = useState({
+  const [user] = useState({
     name: 'Dave',
     email: 'dave@swiftsend.com',
     phone: '+254 712 345 678',
