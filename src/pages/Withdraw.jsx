@@ -1,20 +1,21 @@
 import { useState } from 'react';
+import { useAuth } from '../auth/AuthContext';
 
 const Withdraw = () => {
   const [amount, setAmount] = useState('');
   const [method, setMethod] = useState('bank');
   const [accountDetails, setAccountDetails] = useState('');
   const [message, setMessage] = useState('');
+  const { authFetch } = useAuth();
 
   const handleWithdraw = async (e) => {
     e.preventDefault();
 
     try {
-      const response = await fetch('/api/withdrawals/', {
+      const response = await authFetch('/api/withdrawals/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          // Include authorization token if needed
         },
         body: JSON.stringify({
           amount,
@@ -31,7 +32,7 @@ const Withdraw = () => {
       } else {
         setMessage(data.error || 'Something went wrong.');
       }
-    } catch (error) {
+    } catch {
       setMessage('Network error. Please try again.');
     }
   };

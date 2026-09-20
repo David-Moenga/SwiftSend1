@@ -1,8 +1,8 @@
 import { useState } from 'react';
 
 const Wallet = () => {
-  const [balance, setBalance] = useState(420.50); // In USD
-  const [transactions, setTransactions] = useState([
+  const [balance] = useState(420.50); // In USD
+  const [transactions] = useState([
     {
       id: 'TXN1001',
       type: 'Credit',

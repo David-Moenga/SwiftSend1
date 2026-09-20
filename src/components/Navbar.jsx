@@ -2,9 +2,18 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Menu, X } from 'lucide-react'; // Optional: install lucide-react for icons
 import DarkModeToggle from './DarkModeToggle';
+import { useAuth } from '../auth/AuthContext';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const { isAuthenticated, signOut } = useAuth();
+
+  const closeMenu = () => setIsOpen(false);
+
+  const handleSignOut = async () => {
+    await signOut();
+    closeMenu();
+  };
 
   return (
     <nav className="bg-[#2C3E50] text-white p-4">
@@ -23,13 +32,22 @@ const Navbar = () => {
         {/* Desktop links */}
         <div className="hidden md:flex space-x-4">
           <Link to="/">Home</Link>
-          <Link to="/send">Send</Link>
-          <Link to="/wallet">Wallet</Link>
-          <Link to="/history">History</Link>
-          <Link to="/track">Track</Link>
-          <Link to="/profile">Profile</Link>
-          <Link to="/withdraw">Withdraw</Link>
-          <Link to="/login">Login</Link>
+          {isAuthenticated ? (
+            <>
+              <Link to="/send">Send</Link>
+              <Link to="/wallet">Wallet</Link>
+              <Link to="/history">History</Link>
+              <Link to="/track">Track</Link>
+              <Link to="/profile">Profile</Link>
+              <Link to="/withdraw">Withdraw</Link>
+              <button type="button" onClick={handleSignOut}>Logout</button>
+            </>
+          ) : (
+            <>
+              <Link to="/login">Login</Link>
+              <Link to="/register">Register</Link>
+            </>
+          )}
         </div>
         <DarkModeToggle />
       </div>
@@ -37,15 +55,23 @@ const Navbar = () => {
       {/* Mobile menu */}
       {isOpen && (
         <div className="flex flex-col space-y-2 mt-2 md:hidden">
-          <Link to="/" onClick={() => setIsOpen(false)}>Home</Link>
-          <Link to="/send" onClick={() => setIsOpen(false)}>Send</Link>
-          <Link to="/wallet" onClick={() => setIsOpen(false)}>Wallet</Link>
-          <Link to="/history" onClick={() => setIsOpen(false)}>History</Link>
-          <Link to="/track" onClick={() => setIsOpen(false)}>Track</Link>
-          <Link to="/profile" onClick={() => setIsOpen(false)}>Profile</Link>
-          <Link to="/withdraw" onClick={() => setIsOpen(false)}>Withdraw</Link>
-          <Link to='/darkmodetoggle' onClick={() => setIsOpen(false)}>Dark Mode</Link>
-          <Link to="/login" onClick={() => setIsOpen(false)}>Login</Link>
+          <Link to="/" onClick={closeMenu}>Home</Link>
+          {isAuthenticated ? (
+            <>
+              <Link to="/send" onClick={closeMenu}>Send</Link>
+              <Link to="/wallet" onClick={closeMenu}>Wallet</Link>
+              <Link to="/history" onClick={closeMenu}>History</Link>
+              <Link to="/track" onClick={closeMenu}>Track</Link>
+              <Link to="/profile" onClick={closeMenu}>Profile</Link>
+              <Link to="/withdraw" onClick={closeMenu}>Withdraw</Link>
+              <button type="button" className="text-left" onClick={handleSignOut}>Logout</button>
+            </>
+          ) : (
+            <>
+              <Link to="/login" onClick={closeMenu}>Login</Link>
+              <Link to="/register" onClick={closeMenu}>Register</Link>
+            </>
+          )}
         </div>
       )}
     </nav>
