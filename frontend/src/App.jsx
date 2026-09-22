@@ -4,6 +4,11 @@ import ProtectedRoute from './components/ProtectedRoute';
 import PublicOnlyRoute from './components/PublicOnlyRoute';
 
 import Home from './pages/Home';
+import ReceiveMoney from './pages/ReceiveMoney';
+import ExchangeRates from './pages/ExchangeRates';
+import Dashboard from './pages/Dashboard';
+import Help from './pages/Help';
+import Verify from './pages/Verify';
 import SendMoney from './pages/SendMoney';
 import Wallet from './pages/Wallet';
 import History from './pages/History';
@@ -33,9 +38,6 @@ function App() {
           <Route path="withdraw" element={<Withdraw />} />
         </Route>
 
-
-
-        e3232b2 (enhanced the structure of the app)
         <Route element={<PublicOnlyRoute />}>
           <Route path="login" element={<Login />} />
           <Route path="register" element={<Register />} />
