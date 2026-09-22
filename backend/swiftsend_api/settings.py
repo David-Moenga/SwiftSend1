@@ -18,7 +18,11 @@ if not SECRET_KEY:
     SECRET_KEY = "django-insecure-development-key-not-for-production"
 ALLOWED_HOSTS = [
     host.strip()
+<<<<<<< HEAD
     for host in os.environ.get("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
+=======
+    for host in os.environ.get("DJANGO_ALLOWED_HOSTS", "https://backend-ecru-nine-63.vercel.app/").split(",")
+>>>>>>> e3232b2 (enhanced the structure of the app)
     if host.strip()
 ]
 
@@ -106,12 +110,13 @@ SIMPLE_JWT = {
     "AUTH_HEADER_TYPES": ("Bearer",),
 }
 
-CORS_ALLOWED_ORIGINS = [
-    origin.strip()
-    for origin in os.environ.get(
-        "CORS_ALLOWED_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173"
+ALLOWED_HOSTS = [
+    host.strip()
+    for host in os.environ.get(
+        "DJANGO_ALLOWED_HOSTS",
+        "localhost,127.0.0.1,backend-ecru-nine-63.vercel.app"
     ).split(",")
-    if origin.strip()
+    if host.strip()
 ]
 CORS_ALLOW_CREDENTIALS = True
 

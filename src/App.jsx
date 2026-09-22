@@ -18,6 +18,12 @@ function App() {
     <Routes>
       <Route path="/" element={<Layout />}>
         <Route index element={<Home />} />
+        <Route path="receive" element={<ReceiveMoney />} />
+        <Route path="rates" element={<ExchangeRates />} />
+        <Route path="dashboard" element={<Dashboard />} />
+        <Route path="help" element={<Help />} />
+        <Route path="verify" element={<Verify />} />
+
         <Route element={<ProtectedRoute />}>
           <Route path="send" element={<SendMoney />} />
           <Route path="wallet" element={<Wallet />} />
@@ -26,6 +32,10 @@ function App() {
           <Route path="profile" element={<Profile />} />
           <Route path="withdraw" element={<Withdraw />} />
         </Route>
+
+
+
+        e3232b2 (enhanced the structure of the app)
         <Route element={<PublicOnlyRoute />}>
           <Route path="login" element={<Login />} />
           <Route path="register" element={<Register />} />
