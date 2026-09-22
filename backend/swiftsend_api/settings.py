@@ -1,11 +1,23 @@
 from datetime import timedelta
 import os
 from pathlib import Path
+from urllib.parse import urlsplit
 
 from django.core.exceptions import ImproperlyConfigured
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+
+def clean_host(value):
+    cleaned = (value or "").strip()
+    if not cleaned:
+        return ""
+
+    parsed = urlsplit(cleaned if "://" in cleaned else f"//{cleaned}")
+    hostname = parsed.hostname or cleaned
+    return hostname.strip("[]/")
+
 
 ENVIRONMENT = os.environ.get("DJANGO_ENV", "development").lower()
 IS_PRODUCTION = ENVIRONMENT != "development"
@@ -17,13 +29,22 @@ if not SECRET_KEY:
         raise ImproperlyConfigured("DJANGO_SECRET_KEY must be set outside development.")
     SECRET_KEY = "django-insecure-development-key-not-for-production"
 ALLOWED_HOSTS = [
+
     host.strip()
-<<<<<<< HEAD
+
     for host in os.environ.get("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
-=======
+
     for host in os.environ.get("DJANGO_ALLOWED_HOSTS", "https://backend-ecru-nine-63.vercel.app/").split(",")
->>>>>>> e3232b2 (enhanced the structure of the app)
+ e3232b2 (enhanced the structure of the app)
     if host.strip()
+
+    host
+    for host in (
+        clean_host(value)
+        for value in os.environ.get("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
+    )
+    if host
+ c7a857e (created the frontend folder and corrected all the configuration)
 ]
 
 INSTALLED_APPS = [

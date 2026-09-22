@@ -1,0 +1,19 @@
+import { useState } from 'react';
+import { ChevronDown, MessageCircle, Search, Send, ShieldCheck } from 'lucide-react';
+
+const questions = [
+  ['How long does a transfer take?', 'Most mobile wallet and SwiftSend wallet transfers arrive within minutes. Bank transfers can take 1–2 business days, depending on the destination.'],
+  ['How much does it cost to send money?', 'You will see the exact fee and exchange rate before confirming. Fees start from $4.99 and depend on where you’re sending.'],
+  ['How can I track my transfer?', 'Use your transfer reference on our Track a transfer page. We’ll also keep you updated by email and notification.'],
+  ['Is my money secure with SwiftSend?', 'Yes. We use secure encryption and monitor transactions to help protect your account and transfers.'],
+];
+
+const Help = () => {
+  const [open, setOpen] = useState(0); const [search, setSearch] = useState('');
+  const visible = questions.filter(([question]) => question.toLowerCase().includes(search.toLowerCase()));
+  return <div className="bg-[#f7f9fc]"><section className="bg-[#102522] px-5 py-16 text-center text-white lg:py-20"><p className="text-sm font-bold uppercase tracking-[.17em] text-[#84e3c8]">Help centre</p><h1 className="mt-3 text-4xl font-bold tracking-[-.055em] sm:text-5xl">How can we help?</h1><div className="mx-auto mt-7 flex max-w-xl items-center gap-3 rounded-xl bg-white px-4 py-3 text-slate-700 shadow-lg"><Search size={19} className="text-slate-400" /><input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search for an answer" className="w-full bg-transparent text-sm outline-none placeholder:text-slate-400" /></div></section><div className="mx-auto max-w-5xl px-5 py-12 lg:px-8 lg:py-16"><div className="grid gap-5 sm:grid-cols-3"><HelpCard icon={<Send />} title="Sending money" text="Transfers, payments, and delivery" /><HelpCard icon={<ShieldCheck />} title="Account & security" text="Verification and staying protected" /><HelpCard icon={<MessageCircle />} title="Contact support" text="We’re here when you need us" /></div><section className="mx-auto mt-14 max-w-3xl"><h2 className="text-2xl font-bold tracking-[-.04em] text-slate-900">Frequently asked questions</h2><div className="mt-5 space-y-3">{visible.map(([question, answer], index) => <article key={question} className="rounded-2xl border border-slate-200 bg-white"><button onClick={() => setOpen(open === index ? -1 : index)} className="flex w-full items-center justify-between gap-4 p-5 text-left text-sm font-bold text-slate-800"><span>{question}</span><ChevronDown size={18} className={`shrink-0 text-slate-500 transition ${open === index ? 'rotate-180' : ''}`} /></button>{open === index && <p className="border-t border-slate-100 px-5 py-4 text-sm leading-6 text-slate-600">{answer}</p>}</article>)}{!visible.length && <p className="rounded-xl bg-white p-5 text-sm text-slate-500">No results found. Try a different search.</p>}</div></section><div className="mx-auto mt-12 flex max-w-3xl flex-col items-center justify-between gap-4 rounded-2xl bg-[#ddf7ee] p-6 text-center sm:flex-row sm:text-left"><div><p className="font-bold text-slate-900">Still need a hand?</p><p className="mt-1 text-sm text-slate-600">Our support team is ready to help.</p></div><button className="inline-flex items-center gap-2 rounded-xl bg-[#0f766e] px-4 py-2.5 text-sm font-semibold text-white"><MessageCircle size={16} /> Message us</button></div></div></div>;
+};
+
+const HelpCard = ({ icon, title, text }) => <button className="rounded-2xl border border-slate-200 bg-white p-5 text-left transition hover:-translate-y-0.5 hover:shadow-md"><span className="grid h-10 w-10 place-items-center rounded-xl bg-[#e7faf3] text-[#087869]">{icon}</span><p className="mt-4 font-bold text-slate-900">{title}</p><p className="mt-1 text-sm text-slate-500">{text}</p></button>;
+
+export default Help;
