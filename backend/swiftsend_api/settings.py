@@ -22,29 +22,21 @@ def clean_host(value):
 ENVIRONMENT = os.environ.get("DJANGO_ENV", "development").lower()
 IS_PRODUCTION = ENVIRONMENT != "development"
 DEBUG = not IS_PRODUCTION
-SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
 
+SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
 if not SECRET_KEY:
     if IS_PRODUCTION:
         raise ImproperlyConfigured("DJANGO_SECRET_KEY must be set outside development.")
     SECRET_KEY = "django-insecure-development-key-not-for-production"
+
+DEFAULT_ALLOWED_HOSTS = "localhost,127.0.0.1"
 ALLOWED_HOSTS = [
-
-    host.strip()
-
-    for host in os.environ.get("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
-
-    for host in os.environ.get("DJANGO_ALLOWED_HOSTS", "https://backend-ecru-nine-63.vercel.app/").split(",")
- e3232b2 (enhanced the structure of the app)
-    if host.strip()
-
     host
     for host in (
         clean_host(value)
-        for value in os.environ.get("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
+        for value in os.environ.get("DJANGO_ALLOWED_HOSTS", DEFAULT_ALLOWED_HOSTS).split(",")
     )
     if host
- c7a857e (created the frontend folder and corrected all the configuration)
 ]
 
 INSTALLED_APPS = [
@@ -131,15 +123,23 @@ SIMPLE_JWT = {
     "AUTH_HEADER_TYPES": ("Bearer",),
 }
 
-ALLOWED_HOSTS = [
-    host.strip()
-    for host in os.environ.get(
-        "DJANGO_ALLOWED_HOSTS",
-        "localhost,127.0.0.1,backend-ecru-nine-63.vercel.app"
-    ).split(",")
-    if host.strip()
-]
 CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOWED_ORIGINS = [
+    origin.strip()
+    for origin in os.environ.get(
+        "CORS_ALLOWED_ORIGINS",
+        "http://localhost:5173,http://127.0.0.1:5173",
+    ).split(",")
+    if origin.strip()
+]
+CSRF_TRUSTED_ORIGINS = [
+    origin.strip()
+    for origin in os.environ.get(
+        "CSRF_TRUSTED_ORIGINS",
+        "http://localhost:5173,http://127.0.0.1:5173",
+    ).split(",")
+    if origin.strip()
+]
 
 if IS_PRODUCTION:
     SECURE_SSL_REDIRECT = True
