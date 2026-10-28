@@ -32,6 +32,31 @@ class AuthenticationApiTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
+    def test_login_rejects_unknown_email(self):
+        response = self.client.post(
+            "/api/auth/login/",
+            {"email": "ghost@example.com", "password": "Strong!pass123"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_register_rejects_duplicate_email(self):
+        response = self.client.post(
+            "/api/auth/register/",
+            {"name": "Ada Lovelace", "email": "ada@example.com", "password": "Strong!pass123"},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        duplicate_response = self.client.post(
+            "/api/auth/register/",
+            {"name": "Ada Again", "email": "ada@example.com", "password": "Strong!pass123"},
+            format="json",
+        )
+        self.assertEqual(duplicate_response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(User.objects.count(), 1)
+
     def test_logout_blacklists_the_refresh_token(self):
         registration_response = self.client.post(
             "/api/auth/register/",
@@ -53,3 +78,68 @@ class AuthenticationApiTests(APITestCase):
 
         self.assertEqual(logout_response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(refresh_response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_refresh_rotates_and_blacklists_the_previous_token(self):
+        registration_response = self.client.post(
+            "/api/auth/register/",
+            {"name": "Ada Lovelace", "email": "ada@example.com", "password": "Strong!pass123"},
+            format="json",
+        )
+        refresh_token = registration_response.data["refresh"]
+
+        first_refresh_response = self.client.post(
+            "/api/auth/refresh/",
+            {"refresh": refresh_token},
+            format="json",
+        )
+        self.assertEqual(first_refresh_response.status_code, status.HTTP_200_OK)
+        self.assertIn("access", first_refresh_response.data)
+
+        second_refresh_response = self.client.post(
+            "/api/auth/refresh/",
+            {"refresh": refresh_token},
+            format="json",
+        )
+        self.assertEqual(second_refresh_response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_logout_rejects_an_invalid_refresh_token(self):
+        registration_response = self.client.post(
+            "/api/auth/register/",
+            {"name": "Ada Lovelace", "email": "ada@example.com", "password": "Strong!pass123"},
+            format="json",
+        )
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {registration_response.data['access']}")
+
+        response = self.client.post(
+            "/api/auth/logout/",
+            {"refresh": "not-a-real-refresh-token"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_login_rejects_inactive_users(self):
+        User.objects.create_user(
+            username="ada@example.com",
+            email="ada@example.com",
+            password="Strong!pass123",
+            is_active=False,
+        )
+
+        response = self.client.post(
+            "/api/auth/login/",
+            {"email": "ada@example.com", "password": "Strong!pass123"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_register_rejects_a_password_shorter_than_eight_characters(self):
+        response = self.client.post(
+            "/api/auth/register/",
+            {"name": "Ada Lovelace", "email": "ada@example.com", "password": "short"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(User.objects.count(), 0)
