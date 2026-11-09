@@ -317,3 +317,24 @@ if IS_PRODUCTION:
 
     SECURE_HSTS_PRELOAD = True
 
+
+
+# -------------------------------------------------------------------
+# SwiftSend corridor & integration hooks (SOW Deliverables 1-3)
+# -------------------------------------------------------------------
+
+SWIFTSEND_INTEGRATIONS = {
+    "mode": os.environ.get("SWIFTSEND_INTEGRATION_MODE", "mock"),
+    "stellar_network": os.environ.get("STELLAR_NETWORK", "testnet"),
+    "stellar_horizon_url": os.environ.get("STELLAR_HORIZON_URL", "https://horizon-testnet.stellar.org"),
+    "stellar_source_secret": os.environ.get("STELLAR_SOURCE_SECRET", ""),
+    "stellar_source_public_key": os.environ.get("STELLAR_SOURCE_PUBLIC_KEY", ""),
+    "stellar_destination_public_key": os.environ.get("STELLAR_DESTINATION_PUBLIC_KEY", ""),
+    "stellar_asset_code": os.environ.get("STELLAR_ASSET_CODE", "USDC"),
+    "stellar_asset_issuer": os.environ.get("STELLAR_ASSET_ISSUER", ""),
+    "anchor_provider": os.environ.get("STELLAR_ANCHOR_PROVIDER", ""),
+    "on_ramp_provider": os.environ.get("ON_RAMP_PROVIDER", ""),
+    "payout_provider": os.environ.get("KES_PAYOUT_PROVIDER", ""),
+    "ussd_shortcode": os.environ.get("USSD_SHORTCODE", "*384#"),
+    "ussd_webhook_secret": os.environ.get("USSD_WEBHOOK_SECRET", ""),
+}
