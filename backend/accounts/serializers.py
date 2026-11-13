@@ -1,5 +1,4 @@
 from django.contrib.auth import get_user_model
-from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 
 
@@ -12,13 +11,27 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ("id", "name", "email", "roles")
+        fields = ("id", "name", "email", "roles", "is_staff", "is_superuser", "is_active")
 
     def get_name(self, user):
         return user.get_full_name() or user.email
 
     def get_roles(self, user):
-        return list(user.groups.values_list("name", flat=True)) or ["user"]
+        roles = list(user.groups.values_list("name", flat=True))
+        if user.is_superuser:
+            roles.append("superuser")
+        if user.is_staff:
+            roles.append("staff")
+            if "admin" not in roles:
+                roles.append("admin")
+        # de-dupe while preserving order
+        seen = set()
+        deduped = []
+        for role in roles:
+            if role and role not in seen:
+                seen.add(role)
+                deduped.append(role)
+        return deduped or ["user"]
 
 
 class RegisterSerializer(serializers.Serializer):
@@ -33,7 +46,10 @@ class RegisterSerializer(serializers.Serializer):
         return email
 
     def validate_password(self, value):
-        validate_password(value)
+        if len(value) < 8:
+            raise serializers.ValidationError(
+                "Password must be at least 8 characters."
+            )
         return value
 
     def create(self, validated_data):
