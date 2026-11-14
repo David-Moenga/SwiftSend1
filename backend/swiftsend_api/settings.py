@@ -113,6 +113,7 @@ INSTALLED_APPS = [
 
     "accounts",
     "transfers",
+    "ussd",
 ]
 
 
@@ -338,3 +339,11 @@ SWIFTSEND_INTEGRATIONS = {
     "ussd_shortcode": os.environ.get("USSD_SHORTCODE", "*384#"),
     "ussd_webhook_secret": os.environ.get("USSD_WEBHOOK_SECRET", ""),
 }
+
+# Africa's Talking (USSD sandbox/production) configuration
+AT_USERNAME = os.environ.get("AT_USERNAME", "sandbox")
+AT_API_KEY = os.environ.get("AT_API_KEY", "")
+USSD_SHORTCODE = os.environ.get("USSD_SHORTCODE", "*384#")
+USSD_WEBHOOK_SECRET = os.environ.get("USSD_WEBHOOK_SECRET", "")
+USSD_MIN_AMOUNT_KES = os.environ.get("USSD_MIN_AMOUNT_KES", "100")
+USSD_MAX_AMOUNT_KES = os.environ.get("USSD_MAX_AMOUNT_KES", "70000")
